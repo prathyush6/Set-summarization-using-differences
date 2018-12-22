@@ -1,3 +1,0 @@
-Compact set summarization using differences
-
-1. 
