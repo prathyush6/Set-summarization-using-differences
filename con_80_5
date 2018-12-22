@@ -1,0 +1,11 @@
+Input processing time 2.5864734649658203
+===========Baseline Heuristic===========
+Size of X: 48
+Size of Y: 10
+Baseline Objective  : 58
+Baseline run time 158.5191798210144
+===========ISSC ========================
+Size of X: 48
+Size of Y: 10
+ISSC Objective: 58
+ISSC run time 4279.24950003624

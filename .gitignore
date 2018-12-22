@@ -1,0 +1,8 @@
+*.class
+*.pyc
+*.csv
+*.dat
+*.dll
+*.exe
+*.o
+*.so
