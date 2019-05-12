@@ -55,7 +55,7 @@ def IteratedSubmodularSetCover(S, T):
     #   Y = list6
     #print("len of Y "+str(len(Y)))
     #recompute weights of each set for next iteration w[i] = term1 - term2 +term3
-    for d in range(1, 100): 
+    for d in range(1, 4): 
         print("Iteration :"+str(d))
         for i in range(0, len(S)):
             if i in X[d]:
@@ -134,7 +134,7 @@ def IteratedSubmodularSetCover(S, T):
        selected6, list6 = SubModularSetCover.submodularsetcover(Impure, wtImpure, tempComp3)    
        Y = list6
     #print("Target set size : "+str(len(T)))
-    out2 = "Size of X: "+str(len(X[d+1]))+"\nSize of Y: "+str(len(Y))+"\nISSC Objective: "+str(len(X[d]) + len(Y))+"\n"
+    out2 = "Size of X: "+str(len(X[d+1]))+"\nSize of Y: "+str(len(Y))+"\nISSC Objective: "+str(len(X[d+1]) + len(Y))+"\n"
     return out2
  
 if __name__ == "__main__":

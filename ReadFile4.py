@@ -40,18 +40,28 @@ def readfile(filename, tsize):
         #mapsettoi[tempSet] = count
         count = count + 1
         S.append(tempSet)
+    print("initial set size" +str(len((S))))
+    W = []
+    for i in range(0, len(S)-1):
+        for j in range(i+1, len(S)):
+            tempSet = S[i].intersection(S[j])
+            W.append(tempSet)
+    print("W size"+str(len(W))) 
+    for i in range(0, len(W)):
+        S.append(W[i]) 
     
     for i in range(0, len(U)):
         tempSet = set([i])
         S.append(tempSet)
         #mapsettoi[tempSet] = count
         count = count + 1
-    print("|S| = "+str(count))
+    #print("|S| = "+str(len(S)))
     print("|U| = "+str(len(U)))
 
     tsize = int(tsize)
     #print("tsize "+str(tsize))
-    T = set([])
+    T = S[145].union(S[396])
+    #T = T.union(S[519])
     #T = S[6]
     #T = U
     #T = T.union(S[597])
@@ -66,18 +76,18 @@ def readfile(filename, tsize):
     #T = T.intersection(S[7])
     #T = T - S[32]
     #generate target set T as a randomly chosen subset of U
-    for i in range(0, tsize):
-        temp = random.randint(0, len(U)-1)
-        if i == 1:
-           T.add(temp)
-        else:
-           while temp in T:
-                 temp = random.randint(0, len(U)-1)
-           T.add(temp)
+    #for i in range(0, tsize):
+    #    temp = random.randint(0, len(U)-1)
+    #    if i == 1:
+    #       T.add(temp)
+    #    else:
+    #       while temp in T:
+    #             temp = random.randint(0, len(U)-1)
+    #       T.add(temp)
     
     print("|T| = "+str(len(T)))   
    
-    r = set([])
+    r = set([145,396])
     R = []
     for i in range(0, len(S)):
         if i not in r:
@@ -139,13 +149,13 @@ if  __name__ == "__main__":
    print("input done")
    iptime = time.time() - start_ip
    fw.write("Input processing time "+str(iptime)+"\n")
-   start_bl = time.time()
-   fw.write("===========Baseline Heuristic===========\n")
-   out1 = BaselineHeuristic.baselineheuristic(U, S, T) 
-   fw.write(out1)
-   bltime = time.time() - start_bl
-   fw.write("Baseline run time "+str(bltime)+"\n")
-   print("baseline completed")  
+   #start_bl = time.time()
+   #fw.write("===========Baseline Heuristic===========\n")
+   #out1 = BaselineHeuristic.baselineheuristic(U, S, T) 
+   #fw.write(out1)
+   #bltime = time.time() - start_bl
+   #fw.write("Baseline run time "+str(bltime)+"\n")
+   #print("baseline completed")  
    
    #fw.write("===========ISSC ========================\n")
    #start_isc = time.time()
@@ -228,7 +238,7 @@ if  __name__ == "__main__":
       
    itr = 0
    minobj = 1000000000
-   while itr < 100:
+   while itr < 20:
          feasible = 0
          while 1-feasible:
               ny_s1 = IntegerProgram.prob_round1_y(nx_s1, xr_s, yr_s, U, S, T)
@@ -264,14 +274,23 @@ if  __name__ == "__main__":
    #with open('datasets/Donald-Tweets!/Donald-Tweets!.T2-H10.set_names.txt') as f:
     lines = f.readlines()
     setcount = 0
+    actsubsets = []
     for line in lines:
         if setid not in r:
            setname = line.strip()
            setmapping[setcount] = setname
+           actsubsets.append(setname)
            setcount = setcount + 1
+           if setcount == 500:
+              break
         setid = setid+1
-          
-   #print(setmapping)
+    
+   for i in range(0, len(actsubsets)-1):
+       for j in range(i+1, len(actsubsets)):
+           setmapping[setcount] = str(actsubsets[i])+" and "+str(actsubsets[j])
+           setcount = setcount + 1
+            
+   print(setmapping)
    #print("\nSolution\nX\n")
    A1 = sorted(A1)
    A2 = sorted(A2)
@@ -299,19 +318,19 @@ if  __name__ == "__main__":
    setforR = sorted(setforR)
    for si in setforR:
        R.append(S[si])
-       
+   #print(A1)   
    print("length of R"+str(len(R)))
    fw.write("LP rounding2 Objective value : "+str(minobj)+"\n")
    r2time = time.time() - start_r2 + lptime
    fw.write("LP rounding2 runtime "+str(r2time)+"\n")
 
-   fw.write("===========Baseline Heuristic===========\n")
-   start_bl = time.time()
-   out1 = BaselineHeuristic.baselineheuristic(U, R, T)
-   fw.write(out1)
-   bltime = time.time() - start_bl
-   fw.write("Baseline run time "+str(bltime)+"\n")
-   print("baseline completed")
+   #fw.write("===========Baseline Heuristic===========\n")
+   #start_bl = time.time()
+   #out1 = BaselineHeuristic.baselineheuristic(U, R, T)
+   #fw.write(out1)
+   #bltime = time.time() - start_bl
+   #fw.write("Baseline run time "+str(bltime)+"\n")
+   #print("baseline completed")
 
    #fw.write("===========ISSC ========================\n")
    #start_isc = time.time()
@@ -321,4 +340,4 @@ if  __name__ == "__main__":
    #fw.write("ISSC run time "+str(isctime)+"\n")
 
    fw.write("==============END OF RECORD====================\n")
-
+#

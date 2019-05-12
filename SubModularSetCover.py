@@ -40,6 +40,7 @@ def submodularsetcover(Q, w, T):
     #print(T)
     while(len(T) > 0):
           #print(len(T))
+          #print("stuck up here in submodular")
           choice = alpha.poptask()
           A.append(Q[choice])
           A_id.add(choice)

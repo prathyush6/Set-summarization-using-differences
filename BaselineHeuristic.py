@@ -19,6 +19,7 @@ def baselineheuristic(U, S, T):
   Impure = [] #collection of impure sets
   wtImpure = [] #weight of each impure set for sending in iterations
  
+  #print("entered here-1")
   for i in range(0, len(S)):
       tempset = S[i].intersection(T)
       if len(tempset) == 0:
@@ -47,23 +48,32 @@ def baselineheuristic(U, S, T):
   #print(wtImpure)
  
   #impure sets weights
+  #print("entered here 2 "+str(len(impure)))
+  count = 0
   for index, item in enumerate(impure):  
       tempImpure = []
       tempWtImpure = []
       intCurr = 0 #no of items in intersection b/w current impure set and other impure sets
+      #print("inside loop after 2")
       for index1, item1 in enumerate(impure):
+          #print("stuck up here"+str(index1))
           if item1 != item:  
              tempImpure.append(S[item1])
              tempWtImpure.append(1)
              intCurr = len(S[item1].intersection(S[item])) + intCurr
-      
+     
       if intCurr != 0:
+         count = count+1
          selected, cost = SubModularSetCover.submodularsetcover(tempImpure, tempWtImpure, S[item])
+         #print("done here 2 "+ str(count))
          if w[item] > len(selected):
             w[item] = len(selected)
 
+  #print("entered here 3 "+str(len(mixed)))
+  count = 0
   #mixed sets weights
   for index2, item2 in enumerate(mixed):
+      count = count + 1
       diff = U - T
       tempComp = S[item2].intersection(diff)
       if len(tempComp) == 0: 
@@ -72,16 +82,22 @@ def baselineheuristic(U, S, T):
          selected, cost = SubModularSetCover.submodularsetcover(Impure, wtImpure, tempComp)
          cov = len(selected)
       w[item2] = 1+len(selected) 
+      #print("done here 3 "+str(count))
      
+  #print("entered here 4 "+str(len(puremixed)))
   #pureMixed set weights
-  for index3, item3 in enumerate(puremixed):
+  
+  for index3, item3 in enumerate(puremixed): 
       wtPureMixed[index3] = w[item3]
   #print("Pure Mixed "+str(PureMixed))
   #print(wtPureMixed)
   
+  #print("entered here 5")
   #Compute A1 consisting only of pure and mixed subsets in S 
   A1, cost = SubModularSetCover.submodularsetcover(PureMixed, wtPureMixed, T)
-  #print("Sets selected for A1: \n"+str(A1)+"\n")
+  #print("Sets selected for A1: \n")
+  #for i in A1:
+  #    print(str(sorted(i))+"\n")
   #print("I came here")
   A1elements = set([])
   for i in range(0, len(A1)):
@@ -103,7 +119,9 @@ def baselineheuristic(U, S, T):
      A2, cost = SubModularSetCover.submodularsetcover(Impure, wtImpure, W)
   else:
      A2 = set([])
-  #print("Sets selected for A2 "+str(A2))   
+  #print("Sets selected for A2 \n")
+  #for i in A2:
+  #   print(str(sorted(i))+"\n")   
   
   A2elements = set([])
   for j in range(0, len(A2)):
@@ -111,7 +129,7 @@ def baselineheuristic(U, S, T):
   finalT = A1elements - A2elements
   #print("Initial T: "+str(T))
   #print("Our representation : "+str(finalT))
-  #print("==========================")
+  print("==========================")
   #fw = open("ts_op", "w") 
   out1 = "Size of X: "+str(len(A1))+"\n"+"Size of Y: "+str(len(A2))+"\nBaseline Objective  : "+str(len(A1) + len(A2))+"\n"
 

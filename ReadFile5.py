@@ -22,9 +22,9 @@ from collections import defaultdict
 def readfile(filename, tsize):
     file = open(filename, "r")
     count = 0
-    U = set([])  #universe set
+    U = set()  #universe set
     S = []  #collection of subsets
-    
+ 
     #prepare S from the data file
     for line in file:
         #print("count "+str(count))
@@ -37,34 +37,26 @@ def readfile(filename, tsize):
             tempSet.add(int(tempInt))
             if tempInt not in U: 
                U.add(tempInt)
-        #mapsettoi[tempSet] = count
         count = count + 1
         S.append(tempSet)
     
     for i in range(0, len(U)):
         tempSet = set([i])
         S.append(tempSet)
-        #mapsettoi[tempSet] = count
         count = count + 1
     print("|S| = "+str(count))
+    #print(S[2])
     print("|U| = "+str(len(U)))
-
+    T = set([])#T = set([1, 2, 10, 15, 16, 17, 18, 24, 25, 27, 31, 32, 34, 36, 38, 40, 41, 42, 43, 45, 50])
     tsize = int(tsize)
-    #print("tsize "+str(tsize))
-    T = set([])
-    #T = S[6]
-    #T = U
-    #T = T.union(S[597])
-    #T = T.union(S[3])
-    #W = set([])
-    #W = W.union(S[0])
+    print("|T|= "+str(tsize))
+    #T = S[2]
+    #print("|T| = "+str(len(T)))
 
-    #T = U - W
-   
-    #T = T.intersection(S[2814])
-   
-    #T = T.intersection(S[7])
-    #T = T - S[32]
+    #R = []
+    #for j in range(0, len(S)):
+    #    if j!= 2:
+           #R.append(S[j])
     #generate target set T as a randomly chosen subset of U
     for i in range(0, tsize):
         temp = random.randint(0, len(U)-1)
@@ -72,23 +64,16 @@ def readfile(filename, tsize):
            T.add(temp)
         else:
            while temp in T:
-                 temp = random.randint(0, len(U)-1)
+                 temp = random.randint(0, len(U)-1) 
            T.add(temp)
-    
-    print("|T| = "+str(len(T)))   
-   
-    r = set([])
-    R = []
-    for i in range(0, len(S)):
-        if i not in r:
-           R.append(S[i])
-    print("|R| = "+str(len(R)))
+        
+    #print("T = "+str(T))
     w = []
-    for i in range(0, len(R)):
+    #print("R size "+str(len(R)))
+    for i in range(0, count):
         w.append(1)
-    print("length of w "+str(len(w)))
     #print("w[i] = "+str(w[0])+" for every i" )
-    return U, R, T, w, r
+    return U, S, T, w
 
 #check feasibility for Rounding 1 with theoretical guarantee: might need to modify it
 def feasibleLP(nx_s, ny_s, U, S, T):
@@ -121,7 +106,7 @@ def feasibleLP1(nx_s, S, T):
             sum_i = sum_i + nx_s[si]
         if sum_i < 1:
            feasible = 0
-    #print(feasible)
+    print(feasible)
     return feasible
 
 def objectiveValue(nx_s, ny_s):
@@ -134,18 +119,18 @@ if  __name__ == "__main__":
    fw = open(sys.argv[3],"w")
    gap = float(sys.argv[4])
    start_ip = time.time()
-   U, S, T, w, r = readfile(sys.argv[1], sys.argv[2])
+   U, S, T, w = readfile(sys.argv[1], sys.argv[2])
    #print(U)
-   print("input done")
+   #print(T)
    iptime = time.time() - start_ip
    fw.write("Input processing time "+str(iptime)+"\n")
-   start_bl = time.time()
-   fw.write("===========Baseline Heuristic===========\n")
-   out1 = BaselineHeuristic.baselineheuristic(U, S, T) 
-   fw.write(out1)
-   bltime = time.time() - start_bl
-   fw.write("Baseline run time "+str(bltime)+"\n")
-   print("baseline completed")  
+   #start_bl = time.time()
+   #fw.write("===========Baseline Heuristic===========\n")
+   #out1 = BaselineHeuristic.baselineheuristic(U, S, T) 
+   #fw.write(out1)
+   #bltime = time.time() - start_bl
+   #fw.write("Baseline run time "+str(bltime)+"\n")
+   #print("baseline completed")  
    
    #fw.write("===========ISSC ========================\n")
    #start_isc = time.time()
@@ -169,24 +154,25 @@ if  __name__ == "__main__":
    #print(S)
    #for k, gv in x_s.items():
    #    if gv.x == 1:
-          #A1.add(k)
+   #       A1.add(k)
           #print(S[k])
    #print("sets in A2")
    #for k, gv in y_s.items():
    #    if gv.x == 1:
    #       A2.add(k)
          #print(S[k])
-   #print("Sets in positive clause: "+str(sorted(A1)))
-   #print("Sets in negative clause: "+str(sorted(A2)))
+   #print("Sets in positive clause: "+str(A1))
+   #print("Sets in negative clause: "+str(A2))
    #ilptime = time.time() - start_ilp
    #fw.write("ILP run time "+str(ilptime)+"\n")
+   
    
    fw.write("===============LP=========================\n")
    start_lp = time.time()
    mr, xr_s, yr_s, fr = LP.set_summarize_lp(U, S, T, w)  
    mr.optimize()
    lptime = time.time() - start_lp
-   #print:q("LP completed, need to print objective")
+   #print("LP completed, need to print objective")
    fw.write("LP Objective value: "+str(mr.objVal)+"\n")
    fw.write("LP run time "+str(lptime)+"\n")
    print("end of LP") 
@@ -199,17 +185,19 @@ if  __name__ == "__main__":
    #itr = 0
    #minobj = 1000000000
    #print("code was here before rounding 1")
-   #while itr < 10:
+   #while itr < 100:
    #      feasible = 0
    #      while 1-feasible:
-   #           ny_s = IntegerProgram.prob_round_y(yr_s, fr, 0.1, len(S), len(U))
+       #       ny_s = IntegerProgram.prob_round_y(yr_s, fr, 0.1, len(S), len(U))
               #print("Feasibility: "+str(feasibleLP(nx_s, ny_s, U, S, T)))
-   #           feasible = feasibleLP(nx_s, ny_s, U, S, T)
-   #           print("feasible in R1 "+str(feasible))
-   #      obj = objectiveValue(nx_s, ny_s)
-   #      if obj < minobj:
-   #         minobj = obj
-   #      itr = itr+1
+        #      feasible = feasibleLP(nx_s, ny_s, U, S, T)
+              #print("feasible in R1 "+str(feasible))
+        # obj = objectiveValue(nx_s, ny_s)
+         #if obj < minobj:
+         #   minobj = obj
+         #itr = itr+1
+   #if minobj > len(T):
+   #   minobj = len(T)
    #r1time = time.time() -start_r1 + lptime
    #fw.write("LP rounding1 Objective value : "+str(minobj)+"\n")
    #fw.write("LP rounding1 runtime "+str(r1time)+"\n")
@@ -223,102 +211,26 @@ if  __name__ == "__main__":
    while 1-feasible:
          nx_s1 = IntegerProgram.round1_x(xr_s)
          feasible = feasibleLP1(nx_s1, S, T)
-         print("feasible "+str(feasible))
+         #print("feasible "+str(feasible))
    #fw.write("LP rounding2 rounding of x is feasible\n")
       
    itr = 0
    minobj = 1000000000
-   while itr < 100:
+   while itr < 10:
          feasible = 0
          while 1-feasible:
               ny_s1 = IntegerProgram.prob_round1_y(nx_s1, xr_s, yr_s, U, S, T)
               feasible = feasibleLP(nx_s1, ny_s1, U, S, T)
-              print("feasible "+str(feasible))
+              #print("feasible "+str(feasible))
          obj = objectiveValue(nx_s1, ny_s1)
          #print("stuck in loop")
          if obj < minobj:
             minobj = obj
          itr = itr+1
-
-   A1 = set([])
-   A2 = set([])
-   #print("Target Set "+str(T))
-   print("sets in A1")
-   #print(S)
-   for k, gv in nx_s1.items():
-       if gv == 1:
-         A1.add(k)
-          #print(S[k])
-   print("sets in A2")
-   for k, gv in ny_s1.items():
-       if gv == 1:
-         A2.add(k)
-         #print(S[k])
-   #print("Sets in positive clause: "+str(sorted(A1)))
-   #print("Sets in negative clause: "+str(sorted(A2)))
-   #fq = open('subreddit-interactions-for-25000-users.U5-S100.set_names.txt ', 'r')
-   setid = 0
-   setmapping = {}
-   #with open('datasets/subreddit/subreddit-interactions-for-25000-users.U5-S100.set_names.txt') as f:
-   with open('datasets/movielens20M/movielens20M-tags.M5-T10.set_names.txt') as f:
-   #with open('datasets/Donald-Tweets!/Donald-Tweets!.T2-H10.set_names.txt') as f:
-    lines = f.readlines()
-    setcount = 0
-    for line in lines:
-        if setid not in r:
-           setname = line.strip()
-           setmapping[setcount] = setname
-           setcount = setcount + 1
-        setid = setid+1
-          
-   #print(setmapping)
-   #print("\nSolution\nX\n")
-   A1 = sorted(A1)
-   A2 = sorted(A2)
-   A2union = set([])
-   for j in A2:
-       A2union = A2union.union(S[j])
-   
-   print("|X| = "+str(len(A1))) 
-   print("|Y| = "+str(len(A2))) 
-   
-   R = []
-   setforR = set([])
-   print("\nSolution\nX\n")
-   #print(len(S)) 
-   for si in A1:
-       if si < setcount:
-          print(str(setmapping[si])+","+str(len(S[si].intersection(T))))
-       setforR.add(si)
-   print("\nY\n")
-   for si in A2:
-       if si < setcount:
-          print(str(setmapping[si])+","+str(len(S[si].intersection(A2union))))
-       setforR.add(si)
-
-   setforR = sorted(setforR)
-   for si in setforR:
-       R.append(S[si])
-       
-   print("length of R"+str(len(R)))
+   if minobj > len(T):
+      minobj = len(T)
    fw.write("LP rounding2 Objective value : "+str(minobj)+"\n")
    r2time = time.time() - start_r2 + lptime
    fw.write("LP rounding2 runtime "+str(r2time)+"\n")
-
-   fw.write("===========Baseline Heuristic===========\n")
-   start_bl = time.time()
-   out1 = BaselineHeuristic.baselineheuristic(U, R, T)
-   fw.write(out1)
-   bltime = time.time() - start_bl
-   fw.write("Baseline run time "+str(bltime)+"\n")
-   print("baseline completed")
-
-   #fw.write("===========ISSC ========================\n")
-   #start_isc = time.time()
-   #out2 = IteratedSSC.IteratedSubmodularSetCover(R, T)
-   #fw.write(out2)
-   #isctime = time.time() - start_isc
-   #fw.write("ISSC run time "+str(isctime)+"\n")
-
    fw.write("==============END OF RECORD====================\n")
 
